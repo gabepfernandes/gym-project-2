@@ -177,13 +177,22 @@ def create_merge_dados(driver):
         MERGE (tr2)-[:ATIVIDADE]->(ex1)
         MERGE (tr2)-[:ATIVIDADE]->(ex2)
                     
-        WITH ex3, ex2, ex1
+
+
+        """)
+
+def create_merge_dados_2(driver):
+        with driver.session() as session:
+         session.run("""
+                    
+                WITH ex3, ex2, ex1
         MATCH (ex3: Exercicio{codExerc: "E003"}), (eq3: Equipamento{codEquip: "EQ003"})
         MATCH (ex1: Exercicio{codExerc: "E001"}), (eq1: Equipamento{codEquip: "EQ001"})
         MATCH (ex2: Exercicio{codExerc: "E002"}), (eq2: Equipamento{codEquip: "EQ002"})
         MERGE (ex3)-[:INCLUI]->(eq3)
         MERGE (ex1)-[:INCLUI]->(eq1)
         MERGE (ex2)-[:INCLUI]->(eq2)
+                    
 
         """)
 
@@ -195,6 +204,7 @@ try:
     driver = GraphDatabase.driver(uri, auth=(user, password))
     # create_unique_constraint(driver)  # Create the constraint
     create_merge_dados(driver)  # Create or update the Pessoa node
+    create_merge_dados_2(driver)
     print("Pessoa node created or updated successfully with CPF as unique identifier")
 except Exception as e:
     print(f"Erro ao conectar ao Neo4j: {e}")
