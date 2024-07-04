@@ -1,0 +1,20 @@
+# Gym Project
+
+## Pré-requisitos
+
+- Python 3.x instalado
+- Neo4j instalado e em execução
+
+## Instalação e Configuração
+
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/gabepfernandes/gym-project-2.git
+
+2.
+
+Execute neo4jserver
+Acesse http://localhost:7474
+Execute o arquivo teste
