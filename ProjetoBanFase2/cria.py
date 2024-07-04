@@ -4,58 +4,70 @@ def create_nodes_and_relationships(driver):
     with driver.session() as session:
         session.run("""
         // Criação de nós para Pessoas
-        LOAD CSV WITH HEADERS FROM 'file:///pessoas.csv' AS row
-        MERGE (p:Pessoa {CPF: row.CPF, nome: row.nome, telefone: row.telefone, sexo: row.sexo, dtNascimento: row.dtNascimento, email: row.email})
+        LOAD CSV WITH HEADERS FROM 'file:///pessoas.csv' AS pessoaRow
+        MERGE (pessoa:Pessoa {CPF: pessoaRow.CPF, nome: pessoaRow.nome, telefone: pessoaRow.telefone, sexo: pessoaRow.sexo, dtNascimento: pessoaRow.dtNascimento, email: pessoaRow.email})
+        WITH pessoaRow
 
         // Criação de nós para Alunos
-        LOAD CSV WITH HEADERS FROM 'file:///alunos.csv' AS row
-        MERGE (a:Aluno {CPF: row.CPF, peso: row.peso, altura: row.altura})
-        MERGE (p:Pessoa {CPF: row.CPF})
-        MERGE (p)-[:É_ALUNO]->(a)
+        LOAD CSV WITH HEADERS FROM 'file:///alunos.csv' AS alunoRow
+        MERGE (aluno:Aluno {CPF: alunoRow.CPF, peso: alunoRow.peso, altura: alunoRow.altura})
+        WITH alunoRow
+        MATCH (pessoaAluno:Pessoa {CPF: alunoRow.CPF})
+        MERGE (pessoaAluno)-[:É_ALUNO]->(aluno)
+        WITH alunoRow
 
         // Criação de nós para Instrutores
-        LOAD CSV WITH HEADERS FROM 'file:///instrutores.csv' AS row
-        MERGE (i:Instrutor {CPF: row.CPF, nroContrato: row.nroContrato, salário: row.salário, CREF: row.CREF})
-        MERGE (p:Pessoa {CPF: row.CPF})
-        MERGE (p)-[:É_INSTRUTOR]->(i)
+        LOAD CSV WITH HEADERS FROM 'file:///instrutores.csv' AS instrutorRow
+        MERGE (instrutor:Instrutor {CPF: instrutorRow.CPF, nroContrato: instrutorRow.nroContrato, salário: instrutorRow.salário})
+        WITH instrutorRow
+        MATCH (pessoaInstrutor:Pessoa {CPF: instrutorRow.CPF})
+        MERGE (pessoaInstrutor)-[:É_INSTRUTOR]->(instrutor)
+        WITH instrutorRow
 
         // Criação de nós para Planos
-        LOAD CSV WITH HEADERS FROM 'file:///planos.csv' AS row
-        MERGE (pl:Plano {codPlano: row.codPlano, categoria: row.categoria, preço: row.preço})
+        LOAD CSV WITH HEADERS FROM 'file:///planos.csv' AS planoRow
+        MERGE (plano:Plano {codPlano: planoRow.codPlano, categoria: planoRow.categoria, preço: planoRow.preço})
+        WITH planoRow
 
         // Criação de nós para Treinos
-        LOAD CSV WITH HEADERS FROM 'file:///treinos.csv' AS row
-        MERGE (t:Treino {codTreino: row.codTreino, duracao: row.duracao, foco: row.foco})
-        MERGE (i:Instrutor {CPF: row.cpf_instrutor})
-        MERGE (t)-[:ORIENTADO_POR]->(i)
+        LOAD CSV WITH HEADERS FROM 'file:///treinos.csv' AS treinoRow
+        MERGE (treino:Treino {codTreino: treinoRow.codTreino, duracao: treinoRow.duracao, foco: treinoRow.foco})
+        WITH treinoRow
+        MATCH (instrutorTreino:Instrutor {CPF: treinoRow.cpf_instrutor})
+        MERGE (treino)-[:ORIENTADO_POR]->(instrutorTreino)
+        WITH treinoRow
 
         // Criação de nós para Exercícios
-        LOAD CSV WITH HEADERS FROM 'file:///exercicios.csv' AS row
-        MERGE (e:Exercicio {codExerc: row.codExerc, nome: row.nome})
+        LOAD CSV WITH HEADERS FROM 'file:///exercicios.csv' AS exercicioRow
+        MERGE (exercicio:Exercicio {codExerc: exercicioRow.codExerc, nome: exercicioRow.nome})
+        WITH exercicioRow
 
         // Criação de nós para Equipamentos
-        LOAD CSV WITH HEADERS FROM 'file:///equipamentos.csv' AS row
-        MERGE (eq:Equipamento {codEquip: row.codEquip, nome: row.nome, quantidade: row.quantidade})
+        LOAD CSV WITH HEADERS FROM 'file:///equipamentos.csv' AS equipamentoRow
+        MERGE (equipamento:Equipamento {codEquip: equipamentoRow.codEquip, nome: equipamentoRow.nome})
+        WITH equipamentoRow
 
         // Criação de atividades (Treino-Exercício)
-        LOAD CSV WITH HEADERS FROM 'file:///atividades.csv' AS row
-        MATCH (t:Treino {codTreino: row.codTreino}), (e:Exercicio {codExerc: row.codExerc})
-        MERGE (t)-[:CONTÉM {nroSeries: row.nroSeries}]->(e)
+        LOAD CSV WITH HEADERS FROM 'file:///atividades.csv' AS atividadeRow
+        MATCH (treinoAtividade:Treino {codTreino: atividadeRow.codTreino}), (exercicioAtividade:Exercicio {codExerc: atividadeRow.codExerc})
+        MERGE (treinoAtividade)-[:CONTÉM {nroSeries: atividadeRow.nroSeries}]->(exercicioAtividade)
+        WITH atividadeRow
 
         // Criação de participações (Treino-Aluno)
-        LOAD CSV WITH HEADERS FROM 'file:///participacoes.csv' AS row
-        MATCH (t:Treino {codTreino: row.codTreino}), (a:Aluno {CPF: row.cpf_aluno})
-        MERGE (t)-[:REALIZADO_POR]->(a)
+        LOAD CSV WITH HEADERS FROM 'file:///participacoes.csv' AS participacaoRow
+        MATCH (treinoParticipacao:Treino {codTreino: participacaoRow.codTreino}), (alunoParticipacao:Aluno {CPF: participacaoRow.cpf_aluno})
+        MERGE (treinoParticipacao)-[:REALIZADO_POR]->(alunoParticipacao)
+        WITH participacaoRow
 
         // Criação de utilizações (Exercício-Equipamento)
-        LOAD CSV WITH HEADERS FROM 'file:///utilizacoes.csv' AS row
-        MATCH (e:Exercicio {codExerc: row.codExerc}), (eq:Equipamento {codEquip: row.codEquip})
-        MERGE (e)-[:USA]->(eq)
+        LOAD CSV WITH HEADERS FROM 'file:///utiliza.csv' AS utilizacaoRow
+        MATCH (exercicioUtilizacao:Exercicio {codExerc: utilizacaoRow.codExerc}), (equipamentoUtilizacao:Equipamento {codEquip: utilizacaoRow.codEquip})
+        MERGE (exercicioUtilizacao)-[:USA]->(equipamentoUtilizacao)
         """)
 
 uri = "bolt://localhost:7687"
 user = "neo4j"
-password = "novasenha"
+password = "12345678"
 
 try:
     driver = GraphDatabase.driver(uri, auth=(user, password))

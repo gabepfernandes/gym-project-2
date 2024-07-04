@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 uri = "bolt://localhost:7687"
 user = "neo4j"
-password = "novasenha"
+password = "12345678"
 driver = GraphDatabase.driver(uri, auth=(user, password))
 
 @app.route('/aluno/<cpf>', methods=['GET'])

@@ -1,3 +1,3 @@
-"CPF,nome,telefone,sexo,dtNascimento,email",nome,telefone,sexo,dtNascimento,email
-12345678900,Joao,123456789,M,1990-01-01,joao@example.com
-12345678901,Maria,987654321,F,1992-02-02,maria@example.com
+CPF,nome,telefone,sexo,dtNascimento,email,nome,telefone,sexo,dtNascimento,email
+12345678900,Vinicius,123456789,M,1998-12-19,vini@gmail.com
+11212543292,Gabriela,99213141241,F,1992-02-02,gabi@gmail.com
